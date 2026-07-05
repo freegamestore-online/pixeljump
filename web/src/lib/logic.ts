@@ -1,57 +1,41 @@
-/**
- * Pure game math — no React, no three.js. Keeping the rules here (instead of
- * buried in the render loop) makes them unit-testable: see logic.test.ts.
- * Replace these with your own game's rules; the pattern (pure logic + a thin
- * r3f render layer in components/Game.tsx) is what to keep.
- */
+/** Pure game math — no React, no DOM. */
 
-/** Half-width of the square arena. Player + orbs stay within ±ARENA_HALF. */
-export const ARENA_HALF = 14;
-/** Player move speed, in world units per second. */
-export const PLAYER_SPEED = 11;
-/** How close the player must get to an orb to collect it. */
-export const PICKUP_RADIUS = 1.3;
-/** Seconds on the clock per round. */
-export const ROUND_SECONDS = 30;
+export const PLAYER_RADIUS = 18;
+export const ENEMY_RADIUS = 22;
+export const ENEMY_HEAD_RADIUS = 13;
+export const LASER_RADIUS = 5;
+export const LASER_SPEED = 420;
+export const LASER_LIFETIME = 3.5;
+export const LASER_COOLDOWN_START = 2.2; // seconds between shots at start
+export const LASER_COOLDOWN_MIN = 0.6;   // minimum cooldown at high difficulty
+export const ENEMY_SPEED_START = 130;
+export const ENEMY_SPEED_MAX = 280;
+export const PLAYER_SPEED = 220;
 
-export function clamp(v: number, min: number, max: number): number {
-  return v < min ? min : v > max ? max : v;
+export function clamp(v: number, lo: number, hi: number): number {
+  return v < lo ? lo : v > hi ? v > hi ? hi : v : v;
 }
 
-/** Squared 2D (x,z) distance — cheaper than a sqrt for pure comparisons. */
-export function dist2(ax: number, az: number, bx: number, bz: number): number {
+export function dist(ax: number, ay: number, bx: number, by: number): number {
   const dx = ax - bx;
-  const dz = az - bz;
-  return dx * dx + dz * dz;
+  const dy = ay - by;
+  return Math.sqrt(dx * dx + dy * dy);
 }
 
-/** True when (px,pz) is within `radius` of (ox,oz). */
-export function collides(px: number, pz: number, ox: number, oz: number, radius = PICKUP_RADIUS): boolean {
-  return dist2(px, pz, ox, oz) <= radius * radius;
+export function normalize(dx: number, dy: number): [number, number] {
+  const len = Math.sqrt(dx * dx + dy * dy);
+  if (len === 0) return [0, 0];
+  return [dx / len, dy / len];
 }
 
-/** Keep a point inside the arena bounds. */
-export function clampToArena(x: number, z: number, half = ARENA_HALF): [number, number] {
-  return [clamp(x, -half, half), clamp(z, -half, half)];
+/** Returns the laser cooldown based on elapsed time (difficulty ramp). */
+export function getLaserCooldown(elapsed: number): number {
+  const t = Math.min(elapsed / 60, 1); // ramp over 60 seconds
+  return LASER_COOLDOWN_START - t * (LASER_COOLDOWN_START - LASER_COOLDOWN_MIN);
 }
 
-/**
- * A random orb position at least `minDist` from (avoidX, avoidZ) so an orb
- * never spawns on top of the player. `rand` defaults to Math.random but is
- * injectable so tests stay deterministic.
- */
-export function randomOrbPosition(
-  avoidX: number,
-  avoidZ: number,
-  half = ARENA_HALF,
-  minDist = 4,
-  rand: () => number = Math.random,
-): [number, number] {
-  for (let i = 0; i < 16; i++) {
-    const x = (rand() * 2 - 1) * half;
-    const z = (rand() * 2 - 1) * half;
-    if (dist2(x, z, avoidX, avoidZ) >= minDist * minDist) return [x, z];
-  }
-  // Fallback (extremely unlikely): mirror the avoid point to the far side.
-  return clampToArena(-avoidX, -avoidZ, half);
+/** Returns the enemy speed based on elapsed time. */
+export function getEnemySpeed(elapsed: number): number {
+  const t = Math.min(elapsed / 60, 1);
+  return ENEMY_SPEED_START + t * (ENEMY_SPEED_MAX - ENEMY_SPEED_START);
 }

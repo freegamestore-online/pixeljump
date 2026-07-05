@@ -1,8 +1,26 @@
 export type GamePhase = "menu" | "playing" | "over";
 
-/** A collectible orb resting on the arena floor. */
-export interface Orb {
+export interface Vec2 {
+  x: number;
+  y: number;
+}
+
+export interface Laser {
   id: number;
   x: number;
-  z: number;
+  y: number;
+  vx: number;
+  vy: number;
+  age: number;
+}
+
+export interface Particle {
+  x: number;
+  y: number;
+  vx: number;
+  vy: number;
+  life: number;
+  maxLife: number;
+  r: number;
+  color: string;
 }

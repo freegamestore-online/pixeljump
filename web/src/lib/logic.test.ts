@@ -1,13 +1,5 @@
 import { describe, expect, it } from "vitest";
-import {
-  ARENA_HALF,
-  PICKUP_RADIUS,
-  clamp,
-  clampToArena,
-  collides,
-  dist2,
-  randomOrbPosition,
-} from "./logic";
+import { clamp, dist, normalize, getLaserCooldown, getEnemySpeed } from "./logic";
 
 describe("clamp", () => {
   it("bounds a value within the range", () => {
@@ -17,37 +9,35 @@ describe("clamp", () => {
   });
 });
 
-describe("collides", () => {
-  it("detects a touch inside the pickup radius", () => {
-    expect(collides(0, 0, 0.5, 0.5)).toBe(true);
-  });
-  it("misses when farther than the radius", () => {
-    expect(collides(0, 0, 5, 5)).toBe(false);
-  });
-  it("is inclusive at exactly the radius edge", () => {
-    expect(collides(0, 0, PICKUP_RADIUS, 0)).toBe(true);
+describe("dist", () => {
+  it("computes Euclidean distance", () => {
+    expect(dist(0, 0, 3, 4)).toBeCloseTo(5);
+    expect(dist(0, 0, 0, 0)).toBe(0);
   });
 });
 
-describe("clampToArena", () => {
-  it("keeps out-of-bounds points inside the arena", () => {
-    expect(clampToArena(100, -100)).toEqual([ARENA_HALF, -ARENA_HALF]);
+describe("normalize", () => {
+  it("returns a unit vector", () => {
+    const [nx, ny] = normalize(3, 4);
+    expect(Math.sqrt(nx * nx + ny * ny)).toBeCloseTo(1);
+  });
+  it("handles zero vector", () => {
+    expect(normalize(0, 0)).toEqual([0, 0]);
   });
 });
 
-describe("randomOrbPosition", () => {
-  it("never spawns within minDist of the avoid point", () => {
-    // A deterministic PRNG: the first (0.5, 0.5) draw lands on the player at
-    // origin and must be rejected; the next draw is accepted.
-    const seq = [0.5, 0.5, 0.95, 0.05, 0.2, 0.8];
-    let i = 0;
-    const rand = () => seq[i++ % seq.length]!;
-    const [x, z] = randomOrbPosition(0, 0, ARENA_HALF, 4, rand);
-    expect(dist2(x, z, 0, 0)).toBeGreaterThanOrEqual(16);
+describe("getLaserCooldown", () => {
+  it("starts high and decreases over time", () => {
+    const start = getLaserCooldown(0);
+    const later = getLaserCooldown(60);
+    expect(start).toBeGreaterThan(later);
   });
-  it("stays within the arena bounds", () => {
-    const [x, z] = randomOrbPosition(0, 0);
-    expect(Math.abs(x)).toBeLessThanOrEqual(ARENA_HALF);
-    expect(Math.abs(z)).toBeLessThanOrEqual(ARENA_HALF);
+});
+
+describe("getEnemySpeed", () => {
+  it("increases over time", () => {
+    const slow = getEnemySpeed(0);
+    const fast = getEnemySpeed(60);
+    expect(fast).toBeGreaterThan(slow);
   });
 });
