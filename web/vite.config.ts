@@ -34,9 +34,9 @@ export default defineConfig({
         ],
       },
       manifest: {
-        name: "APPNAME",
-        short_name: "APPNAME",
-        description: "APPNAME — free forever",
+        name: "PixelJump",
+        short_name: "PixelJump",
+        description: "PixelJump — free forever",
         start_url: "/",
         display: "standalone",
         background_color: "#ffffff",
