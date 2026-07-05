@@ -12,9 +12,9 @@ export const PLAYER_ACCEL = 1800;
 export const PLAYER_FRICTION = 0.82;
 export const PLAYER_MAX_SPEED = 320;
 
-export const ENEMY_BASE_SPEED = 155;
-export const ENEMY_SPEED_PER_10 = 18;
-export const ENEMY_MAX_SPEED = 340;
+export const ENEMY_BASE_SPEED = 90;   // was 155 — noticeably slower start
+export const ENEMY_SPEED_PER_10 = 12; // was 18 — gentler ramp per 10 carrots
+export const ENEMY_MAX_SPEED = 210;   // was 340 — lower ceiling
 
 export const ROUND_SECONDS = 60;
 export const POWERUP_SPAWN_INTERVAL = 12; // seconds
@@ -54,23 +54,24 @@ export function getEnemySpeed(score: number): number {
   return Math.min(ENEMY_BASE_SPEED + bonus, ENEMY_MAX_SPEED);
 }
 
-/** Random position on canvas, margin from edges. */
-export function randomPos(margin = 60, w = CANVAS_W, h = CANVAS_H): [number, number] {
-  return [randRange(margin, w - margin), randRange(margin, h - margin)];
+/** Keep a point inside the canvas bounds with padding. */
+export function clampToCanvas(x: number, y: number, pad = 0): [number, number] {
+  return [clamp(x, pad, CANVAS_W - pad), clamp(y, pad, CANVAS_H - pad)];
 }
 
-/** Random position far enough from a point. */
-export function randomPosFarFrom(
-  fx: number, fy: number,
-  minDist = 120,
-  margin = 60,
-  w = CANVAS_W,
-  h = CANVAS_H,
-  maxTries = 30
-): [number, number] {
-  for (let i = 0; i < maxTries; i++) {
-    const [x, y] = randomPos(margin, w, h);
-    if (dist(x, y, fx, fy) >= minDist) return [x, y];
-  }
-  return randomPos(margin, w, h);
+/** Random position anywhere on the canvas with edge padding. */
+export function randomPos(pad = 40): [number, number] {
+  return [randRange(pad, CANVAS_W - pad), randRange(pad, CANVAS_H - pad)];
+}
+
+/** Random position at least minDist away from (ax, ay). */
+export function randomPosFarFrom(ax: number, ay: number, minDist = 120, pad = 40): [number, number] {
+  let x: number, y: number;
+  let attempts = 0;
+  do {
+    x = randRange(pad, CANVAS_W - pad);
+    y = randRange(pad, CANVAS_H - pad);
+    attempts++;
+  } while (dist(x, y, ax, ay) < minDist && attempts < 50);
+  return [x, y];
 }
