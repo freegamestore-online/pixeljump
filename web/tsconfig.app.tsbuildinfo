@@ -1,0 +1,1 @@
+{"root":["./src/app.tsx","./src/main.tsx","./src/types.ts","./src/components/game.tsx","./src/hooks/usehighscore.ts","./src/lib/logic.test.ts","./src/lib/logic.ts"],"version":"5.9.3"}
