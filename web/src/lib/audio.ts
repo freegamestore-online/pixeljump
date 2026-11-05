@@ -15,6 +15,9 @@ export class AudioManager {
 
   get isMuted(): boolean { return this.muted; }
 
+  /** Driven by the platform topbar Mute button (see SoundBridge in App.tsx). */
+  setMuted(m: boolean) { this.muted = m; }
+
   unmute() { this.muted = false; }
 
   private play(fn: (ctx: AudioContext) => void) {

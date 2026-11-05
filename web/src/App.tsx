@@ -1,11 +1,31 @@
-import { useRef, useState, useEffect, useCallback } from "react";
-import { GameShell, GameTopbar } from "@freegamestore/games";
+import { useRef, useState, useEffect, useCallback, type RefObject } from "react";
+import { GameShell, GameTopbar, useSound } from "@freegamestore/games";
 import { GameComponent } from "./components/Game";
 import { useHighScore } from "./hooks/useHighScore";
 import { AudioManager } from "./lib/audio";
 import type { GamePhase } from "./types";
 
 const audio = new AudioManager();
+
+// Keeps the AudioManager in step with the platform topbar Mute button and hands
+// its toggle to the menu's Sound button, so both controls agree.
+function SoundBridge({
+  onChange,
+  toggleRef,
+}: {
+  onChange: (muted: boolean) => void;
+  toggleRef: RefObject<() => void>;
+}) {
+  const { muted, toggle } = useSound();
+  useEffect(() => {
+    audio.setMuted(muted);
+    onChange(muted);
+  }, [muted, onChange]);
+  useEffect(() => {
+    toggleRef.current = toggle;
+  }, [toggle, toggleRef]);
+  return null;
+}
 
 export default function App() {
   const [phase, setPhase] = useState<GamePhase>("menu");
@@ -27,10 +47,13 @@ export default function App() {
     setPhase("playing");
   }, []);
 
+  const sdkToggle = useRef<() => void>(() => {});
   const toggleSound = useCallback(() => {
-    const on = audio.toggle();
-    setSoundOn(on);
-    if (on) audio.buttonClick();
+    sdkToggle.current();
+  }, []);
+  const handleSoundChange = useCallback((muted: boolean) => {
+    setSoundOn(!muted);
+    if (!muted) audio.buttonClick();
   }, []);
 
   // Animated menu background
@@ -107,6 +130,7 @@ export default function App() {
         />
       }
     >
+      <SoundBridge onChange={handleSoundChange} toggleRef={sdkToggle} />
       {phase === "menu" ? (
         // ── Menu ──────────────────────────────────────────────────────────────
         <div className="relative w-full h-full flex flex-col items-center justify-center overflow-hidden">
