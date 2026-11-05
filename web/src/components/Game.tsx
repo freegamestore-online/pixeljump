@@ -5,7 +5,7 @@ import {
   PLAYER_RADIUS, ENEMY_RADIUS, CARROT_RADIUS, POWERUP_RADIUS,
   PLAYER_ACCEL, PLAYER_FRICTION, PLAYER_MAX_SPEED,
   ROUND_SECONDS, POWERUP_SPAWN_INTERVAL, COMBO_WINDOW,
-  clamp, dist, normalize, lerp, randRange, randomPos, randomPosFarFrom,
+  clamp, dist, normalize, lerp, randRange, randomPosFarFrom,
   getEnemySpeed,
 } from "../lib/logic";
 import { AudioManager } from "../lib/audio";
