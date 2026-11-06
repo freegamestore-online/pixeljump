@@ -10,7 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@freegamestore/games": "^0.20.0",
+    "@freegamestore/games": "^0.20.2",
     "@react-three/drei": "^10",
     "@react-three/fiber": "^9",
     "react": "^19",

@@ -11,8 +11,8 @@ importers:
   web:
     dependencies:
       '@freegamestore/games':
-        specifier: ^0.20.0
-        version: 0.20.0(react@19.2.5)
+        specifier: ^0.20.2
+        version: 0.20.2(react@19.2.5)
       '@react-three/drei':
         specifier: ^10
         version: 10.7.7(@react-three/fiber@9.6.1(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)(three@0.184.0))(@types/react@19.2.14)(@types/three@0.184.0)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)(three@0.184.0)
@@ -881,8 +881,8 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@freegamestore/games@0.20.0':
-    resolution: {integrity: sha512-f2QFAg6Yukvv2GWfKHSnW9MiiciNqq1CKNVMYKU4s8acIKdnDSKUKgrPX1IHkj5klruowqd1PdA5NhW7CJY7sA==}
+  '@freegamestore/games@0.20.2':
+    resolution: {integrity: sha512-P6VDhSSuesHdF0nZYPQAbgENeRSc67gnGHpSN3b/iU4FHcDbm3c9cSOcLVeFeWz8qBRsKxwSWqqTgqaHxfIsDg==}
     engines: {node: '>=22'}
     peerDependencies:
       react: ^19.0.0
@@ -3525,7 +3525,7 @@ snapshots:
   '@esbuild/win32-x64@0.25.12':
     optional: true
 
-  '@freegamestore/games@0.20.0(react@19.2.5)':
+  '@freegamestore/games@0.20.2(react@19.2.5)':
     dependencies:
       react: 19.2.5
 
